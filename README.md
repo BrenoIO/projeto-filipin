@@ -27,3 +27,5 @@ O projeto consiste em uma aplicação web com foco *mobile-first*, desenvolvida 
 1. **Tela 1:** Login de acesso com validação JWT.
 2. **Tela 2:** Chamada Digital Mobile (listagem de alunos com seletores tipo *toggle* e botão de finalização rápida).
 3. **Tela 3:** Painel de Resultados e Alertas (confirmação de sucesso e selos de elegibilidade para exames).
+
+💻
