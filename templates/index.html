@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Projeto Filipin - Agendamento de Treinos</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
   <!-- Barra de Acessibilidade (ODS 3: Saúde e Bem-Estar para Todos) -->
   <header>
@@ -23,28 +25,32 @@
     <section class="card">
       <h2>Reservar Aula de Jiu-Jitsu</h2>
       <form id="booking-form">
-        <label for="student-name">Nome do Atleta:</label>
-        <input type="text" id="student-name" required placeholder="Digite o seu nome completo">
+        <label for="student-name">Nome da Criança (Atleta):</label>
+        <input type="text" id="student-name" required placeholder="Digite o nome completo da criança">
+
+        <label for="student-age">Idade:</label>
+        <input type="number" id="student-age" required min="3" max="17" placeholder="Ex: 10">
+
+        <label for="guardian-name">Nome do Responsável (Obrigatório):</label>
+        <input type="text" id="guardian-name" required placeholder="Nome do pai, mãe ou responsável legal">
 
         <label for="belt">Faixa Atual:</label>
         <select id="belt" required>
-          <option value="">Selecione a sua faixa</option>
+          <option value="">Selecione a faixa</option>
           <option value="Branca">Branca</option>
+          <option value="Cinza">Cinza</option>
+          <option value="Amarela">Amarela</option>
+          <option value="Laranja">Laranja</option>
+          <option value="Verde">Verde</option>
           <option value="Azul">Azul</option>
-          <option value="Roxa">Roxa</option>
-          <option value="Marrom">Marrom</option>
-          <option value="Preta">Preta</option>
+          <!-- Adicionadas as faixas infanto-juvenis comuns -->
         </select>
 
-        <label for="class-time">Horário do Treino:</label>
-        <select id="class-time" required>
-          <option value="">Selecione o horário</option>
-          <option value="07:00 - Jiu-Jitsu Matinal">07:00 - Jiu-Jitsu Matinal</option>
-          <option value="12:00 - Treino Executivo">12:00 - Treino Executivo</option>
-          <option value="19:30 - Fundamental & Submission">19:30 - Fundamental & Submission</option>
-        </select>
+        <label for="observation">Observações (Alergias / Restrições):</label>
+        <textarea id="observation"
+          placeholder="Ex: Alergia a picada de abelha, toma remédio X... (Opcional)"></textarea>
 
-        <button type="submit" class="btn-primary">Confirmar Agendamento</button>
+        <button type="submit" class="btn-primary">Cadastrar Aluno</button>
       </form>
     </section>
 
@@ -57,6 +63,7 @@
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>

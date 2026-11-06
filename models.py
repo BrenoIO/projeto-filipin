@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text
 from sqlalchemy.sql import func
 from database import Base
 
@@ -17,6 +17,9 @@ class Aluno(Base):
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, nullable=False)
     faixa = Column(String, nullable=False)
+    idade = Column(Integer, nullable=False)
+    responsavel = Column(String, nullable=False)  # Obrigatório para menores
+    observacao = Column(Text, nullable=True)     # Restrições ou alergias
     ativo = Column(Boolean, default=True)
 
 class Presenca(Base):
