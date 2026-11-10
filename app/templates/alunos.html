@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% from "_macros.html" import faixa, campos_pessoais, select_faixa, select_graus %}
+{% block titulo %}Alunos{% endblock %}
+{% block conteudo %}
+<section class="card">
+  <details {{ 'open' if erros or not alunos }}>
+    <summary><h1 class="inline">➕ Cadastrar aluno</h1></summary>
+    <form method="post" class="formulario" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {{ campos_pessoais(form, erros, 'novo') }}
+      {{ select_faixa(form.get('faixa'), erros, 'novo-faixa') }}
+      {{ select_graus(form.get('graus', 0), max_graus, erros, 'novo-graus') }}
+      <button type="submit" class="btn btn-primario">Cadastrar aluno</button>
+    </form>
+  </details>
+</section>
+
+<section class="card">
+  <h2>Alunos e frequência</h2>
+  <p class="sutil">Frequência considera as chamadas dos últimos {{ janela }} dias.</p>
+
+  <div class="filtros">
+    <label for="busca" class="sr">Buscar aluno</label>
+    <input type="search" id="busca" placeholder="🔎 Buscar pelo nome" autocomplete="off">
+    {% if mostrar_inativos %}
+      <a class="btn" href="{{ url_for('alunos.lista') }}">Ocultar inativos</a>
+    {% else %}
+      <a class="btn" href="{{ url_for('alunos.lista', inativos=1) }}">Mostrar inativos</a>
+    {% endif %}
+  </div>
+
+  {% if not alunos %}
+    <p>Nenhum aluno cadastrado ainda.</p>
+  {% else %}
+  <ul class="lista-alunos" id="lista-alunos">
+    {% for aluno in alunos %}
+    {% set r = resumos[aluno.id] %}
+    <li data-nome="{{ aluno.nome|lower }}">
+      <a href="{{ url_for('alunos.detalhe', aluno_id=aluno.id) }}" class="cartao-aluno{{ ' inativo' if not aluno.ativo }}">
+        <span class="cartao-topo">
+          <strong>{{ aluno.nome }}</strong>
+          {% if not aluno.ativo %}<span class="etiqueta">Inativo</span>{% endif %}
+        </span>
+        <span class="sutil">{{ aluno.idade }} anos · {{ faixa(aluno.faixa, aluno.graus) }}</span>
+        <span class="metricas">
+          <span>
+            <span class="rotulo">Frequência</span>
+            {% if r.percentual is none %}
+              <span>sem chamadas</span>
+            {% else %}
+              <span>{{ r.presencas_janela }}/{{ r.aulas_janela }} aulas ({{ r.percentual }}%)</span>
+              <span class="barra" aria-hidden="true"><span style="width: {{ r.percentual }}%"></span></span>
+            {% endif %}
+          </span>
+          <span>
+            <span class="rotulo">Desde a última graduação</span>
+            <span>{{ r.presencas_desde_graduacao }} presença(s)</span>
+          </span>
+          <span>
+            <span class="rotulo">Último treino</span>
+            <span>{{ r.ultima_presenca|data_br }}</span>
+          </span>
+        </span>
+        {% if aluno.observacao %}<span class="obs">⚠️ {{ aluno.observacao }}</span>{% endif %}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  <p id="sem-resultados" class="sutil" hidden>Nenhum aluno encontrado.</p>
+  {% endif %}
+</section>
+{% endblock %}

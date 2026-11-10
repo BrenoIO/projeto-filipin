@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titulo %}{% endblock %} · Projeto Filipin</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script>
+    // Aplica as preferências de acessibilidade antes de desenhar a página (evita "piscar").
+    try {
+      if (localStorage.getItem('alto-contraste') === '1') document.documentElement.classList.add('alto-contraste');
+      var f = parseInt(localStorage.getItem('tamanho-fonte'), 10);
+      if (f >= 14 && f <= 24) document.documentElement.style.fontSize = f + 'px';
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topo">
+    <div class="topo-linha">
+      <span class="marca">🥋 Projeto Filipin</span>
+      <div class="acessibilidade" role="group" aria-label="Acessibilidade">
+        <button type="button" id="btn-contraste" aria-pressed="false" title="Alto contraste">◐ <span class="sr">Alto contraste</span></button>
+        <button type="button" id="btn-fonte-menos" title="Diminuir fonte">A−<span class="sr"> Diminuir fonte</span></button>
+        <button type="button" id="btn-fonte-mais" title="Aumentar fonte">A+<span class="sr"> Aumentar fonte</span></button>
+      </div>
+    </div>
+    {% if g.usuario %}
+    <nav class="menu" aria-label="Principal">
+      <a href="{{ url_for('chamada.chamada') }}" {% if request.blueprint == 'chamada' %}aria-current="page"{% endif %}>✅ Chamada</a>
+      <a href="{{ url_for('alunos.lista') }}" {% if request.blueprint == 'alunos' %}aria-current="page"{% endif %}>👥 Alunos</a>
+      <form method="post" action="{{ url_for('auth.logout') }}" class="sair">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit">Sair</button>
+      </form>
+    </nav>
+    {% endif %}
+  </header>
+
+  <main id="conteudo" class="container">
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% for categoria, mensagem in mensagens %}
+      <div class="alerta alerta-{{ categoria }}" role="{{ 'alert' if categoria == 'erro' else 'status' }}">
+        {{ '⚠️' if categoria == 'erro' else '✔️' }} {{ mensagem }}
+      </div>
+      {% endfor %}
+    {% endwith %}
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

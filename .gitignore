@@ -1,9 +1,18 @@
-# Ambiente virtual
+# Ambientes virtuais
+.venv/
 venv/
+
+# Python
 __pycache__/
-
-# Arquivos de sistema
-.DS_Store
 *.pyc
+.pytest_cache/
+.coverage
+htmlcov/
 
+# Segredos (nunca versionar)
 .env
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+.vscode/

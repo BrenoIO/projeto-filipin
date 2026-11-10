@@ -1,0 +1,18 @@
+# Deploy gratuito no Render (https://render.com): New > Blueprint > selecione este repositório.
+services:
+  - type: web
+    name: projeto-filipin
+    runtime: python
+    plan: free
+    region: oregon  # mesma região do banco no Supabase (us-west-2), para respostas mais rápidas
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app --workers 2 --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false  # preencha no painel do Render com a mesma URL do seu .env
+      - key: SESSION_COOKIE_SECURE
+        value: "1"

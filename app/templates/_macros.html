@@ -1,0 +1,67 @@
+{% macro faixa(nome, graus=0) -%}
+{%- set info = faixa_info(nome) -%}
+<span class="faixa">
+  <span class="faixa-cor" style="--cor: {{ info.cor }}; --listra: {{ info.listra }}" aria-hidden="true"></span>
+  <span>{{ nome }}{% if graus %} · {{ graus }} grau{{ 's' if graus > 1 }}{% endif %}</span>
+</span>
+{%- endmacro %}
+
+{% macro erro(erros, campo) -%}
+{%- if erros.get(campo) -%}
+<p class="erro-campo" id="erro-{{ campo }}">⚠️ {{ erros[campo] }}</p>
+{%- endif -%}
+{%- endmacro %}
+
+{% macro aria_erro(erros, campo) -%}
+{%- if erros.get(campo) %} aria-invalid="true" aria-describedby="erro-{{ campo }}"{% endif -%}
+{%- endmacro %}
+
+{% macro campos_pessoais(form, erros, prefixo) %}
+<label for="{{ prefixo }}-nome">Nome do aluno *</label>
+<input type="text" id="{{ prefixo }}-nome" name="nome" required maxlength="120" autocomplete="off"
+       value="{{ form.get('nome', '') }}"{{ aria_erro(erros, 'nome') }}>
+{{ erro(erros, 'nome') }}
+
+<label for="{{ prefixo }}-nascimento">Data de nascimento *</label>
+<input type="date" id="{{ prefixo }}-nascimento" name="data_nascimento" required
+       value="{{ form.get('data_nascimento', '') }}"{{ aria_erro(erros, 'data_nascimento') }}>
+{{ erro(erros, 'data_nascimento') }}
+
+<label for="{{ prefixo }}-responsavel">Nome do responsável *</label>
+<input type="text" id="{{ prefixo }}-responsavel" name="responsavel" required maxlength="120" autocomplete="off"
+       placeholder="Pai, mãe ou responsável legal"
+       value="{{ form.get('responsavel', '') }}"{{ aria_erro(erros, 'responsavel') }}>
+{{ erro(erros, 'responsavel') }}
+
+<label for="{{ prefixo }}-telefone">Telefone do responsável</label>
+<input type="tel" id="{{ prefixo }}-telefone" name="telefone_responsavel" maxlength="20" inputmode="tel"
+       placeholder="(00) 00000-0000"
+       value="{{ form.get('telefone_responsavel') or '' }}"{{ aria_erro(erros, 'telefone_responsavel') }}>
+{{ erro(erros, 'telefone_responsavel') }}
+
+<label for="{{ prefixo }}-observacao">Observações (alergias, restrições, remédios)</label>
+<textarea id="{{ prefixo }}-observacao" name="observacao" maxlength="1000" rows="3"
+          {{ aria_erro(erros, 'observacao') }}>{{ form.get('observacao') or '' }}</textarea>
+{{ erro(erros, 'observacao') }}
+{% endmacro %}
+
+{% macro select_faixa(atual, erros, id) %}
+<label for="{{ id }}">Faixa *</label>
+<select id="{{ id }}" name="faixa" required{{ aria_erro(erros, 'faixa') }}>
+  <option value="">Selecione a faixa</option>
+  {% for f in FAIXAS %}
+  <option value="{{ f }}" {{ 'selected' if f == atual }}>{{ f }}</option>
+  {% endfor %}
+</select>
+{{ erro(erros, 'faixa') }}
+{% endmacro %}
+
+{% macro select_graus(atual, max_graus, erros, id) %}
+<label for="{{ id }}">Graus</label>
+<select id="{{ id }}" name="graus"{{ aria_erro(erros, 'graus') }}>
+  {% for n in range(max_graus + 1) %}
+  <option value="{{ n }}" {{ 'selected' if n == atual|int(0) }}>{{ n }}</option>
+  {% endfor %}
+</select>
+{{ erro(erros, 'graus') }}
+{% endmacro %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% from "_macros.html" import faixa, campos_pessoais, select_faixa, select_graus %}
+{% block titulo %}{{ aluno.nome }}{% endblock %}
+{% block conteudo %}
+<p><a href="{{ url_for('alunos.lista') }}">← Voltar para alunos</a></p>
+
+<section class="card">
+  <h1>{{ aluno.nome }} {% if not aluno.ativo %}<span class="etiqueta">Inativo</span>{% endif %}</h1>
+  <p>{{ aluno.idade }} anos (nascido(a) em {{ aluno.data_nascimento|data_br }}) · {{ faixa(aluno.faixa, aluno.graus) }}</p>
+  <p><strong>Responsável:</strong> {{ aluno.responsavel }}
+    {% if aluno.telefone_responsavel %} · <a href="tel:{{ aluno.telefone_responsavel }}">📞 {{ aluno.telefone_responsavel }}</a>{% endif %}
+  </p>
+  {% if aluno.observacao %}<p class="obs">⚠️ {{ aluno.observacao }}</p>{% endif %}
+</section>
+
+<section class="card">
+  <h2>Frequência</h2>
+  <dl class="numeros">
+    <div>
+      <dt>Últimos {{ janela }} dias</dt>
+      <dd>{% if resumo.percentual is none %}sem chamadas{% else %}{{ resumo.presencas_janela }}/{{ resumo.aulas_janela }} ({{ resumo.percentual }}%){% endif %}</dd>
+    </div>
+    <div>
+      <dt>Desde a última graduação</dt>
+      <dd>{{ resumo.presencas_desde_graduacao }} presença(s)</dd>
+      <dd class="sutil">{% if resumo.ultima_graduacao %}graduado(a) em {{ resumo.ultima_graduacao|data_br }}{% else %}nenhuma graduação registrada{% endif %}</dd>
+    </div>
+    <div>
+      <dt>Último treino</dt>
+      <dd>{{ resumo.ultima_presenca|data_br }}</dd>
+    </div>
+  </dl>
+
+  <h3>Por mês</h3>
+  <table class="tabela">
+    <thead><tr><th scope="col">Mês</th><th scope="col">Presenças</th><th scope="col">Aulas</th><th scope="col">%</th></tr></thead>
+    <tbody>
+      {% for m in historico %}
+      <tr>
+        <td>{{ meses[m.mes] }}/{{ m.ano }}</td>
+        <td>{{ m.presencas }}</td>
+        <td>{{ m.aulas }}</td>
+        <td>{{ ((100 * m.presencas / m.aulas)|round|int ~ '%') if m.aulas else '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if ultimas %}
+  <h3>Últimos treinos</h3>
+  <p>{% for d in ultimas %}{{ d|data_br }}{{ ', ' if not loop.last }}{% endfor %}</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>🥋 Registrar graduação</h2>
+  <p class="sutil">A decisão é do professor. Registre aqui a nova faixa ou o novo grau.</p>
+  <form method="post" action="{{ url_for('alunos.graduar', aluno_id=aluno.id) }}" class="formulario">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {{ select_faixa(aluno.faixa, {}, 'grad-faixa') }}
+    {{ select_graus(aluno.graus, max_graus, {}, 'grad-graus') }}
+    <label for="grad-data">Data da graduação</label>
+    <input type="date" id="grad-data" name="data" required value="{{ hoje.isoformat() }}" max="{{ hoje.isoformat() }}">
+    <button type="submit" class="btn btn-primario">Registrar graduação</button>
+  </form>
+
+  {% if aluno.graduacoes %}
+  <h3>Histórico de graduações</h3>
+  <ul class="lista-simples">
+    {% for gr in aluno.graduacoes %}
+    <li>{{ gr.data|data_br }} — {{ faixa(gr.faixa, gr.graus) }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+
+<section class="card">
+  {% set dados = form or {
+      'nome': aluno.nome,
+      'data_nascimento': aluno.data_nascimento.isoformat(),
+      'responsavel': aluno.responsavel,
+      'telefone_responsavel': aluno.telefone_responsavel,
+      'observacao': aluno.observacao,
+  } %}
+  <details {{ 'open' if erros }}>
+    <summary><h2 class="inline">✏️ Editar dados</h2></summary>
+    <form method="post" action="{{ url_for('alunos.editar', aluno_id=aluno.id) }}" class="formulario" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {{ campos_pessoais(dados, erros, 'editar') }}
+      <button type="submit" class="btn btn-primario">Salvar alterações</button>
+    </form>
+  </details>
+</section>
+
+<section class="card">
+  <form method="post" action="{{ url_for('alunos.alternar_ativo', aluno_id=aluno.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if aluno.ativo %}
+      <p class="sutil">Desativar remove o aluno da chamada, mas mantém todo o histórico.</p>
+      <button type="submit" class="btn btn-perigo" data-confirmar="Desativar {{ aluno.nome }}?">Desativar aluno</button>
+    {% else %}
+      <button type="submit" class="btn">Reativar aluno</button>
+    {% endif %}
+  </form>
+</section>
+{% endblock %}
