@@ -2,6 +2,12 @@
 
 Sistema web *mobile-first* para a instituição comunitária de Jiu-Jitsu **Projeto Filipin**. Ele substitui o controle em papel: o professor faz a chamada pelo celular na beira do tatame, acompanha a frequência de cada aluno e registra as graduações.
 
+🌐 **Acesse:** https://projeto-filipin.onrender.com/
+
+> ⏳ Hospedado no plano gratuito do Render: se o site ficou um tempo sem acessos, o primeiro carregamento pode levar cerca de 1 minuto. Depois disso, fica rápido normalmente.
+>
+> 🔒 O acesso é restrito aos professores da academia (os dados dos alunos são de menores de idade).
+
 ## 🛠️ Stack
 * **Backend:** Python 3.12 + Flask (páginas renderizadas no servidor com Jinja) + SQLAlchemy 2.
 * **Banco de dados:** PostgreSQL no Supabase (conexão via *Session Pooler*).
