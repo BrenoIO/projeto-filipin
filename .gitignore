@@ -16,3 +16,6 @@ htmlcov/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Documentos pessoais (não enviar ao GitHub)
+docs/CONTEXTO_DO_PROJETO.md
