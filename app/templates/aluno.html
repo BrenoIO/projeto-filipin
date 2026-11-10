@@ -13,6 +13,8 @@
   {% if aluno.observacao %}<p class="obs">⚠️ {{ aluno.observacao }}</p>{% endif %}
 </section>
 
+<div class="grade-2">
+<div>
 <section class="card">
   <h2>Frequência</h2>
   <dl class="numeros">
@@ -32,6 +34,7 @@
   </dl>
 
   <h3>Por mês</h3>
+  <div class="rolagem">
   <table class="tabela">
     <thead><tr><th scope="col">Mês</th><th scope="col">Presenças</th><th scope="col">Aulas</th><th scope="col">%</th></tr></thead>
     <tbody>
@@ -45,13 +48,16 @@
       {% endfor %}
     </tbody>
   </table>
+  </div>
 
   {% if ultimas %}
   <h3>Últimos treinos</h3>
   <p>{% for d in ultimas %}{{ d|data_br }}{{ ', ' if not loop.last }}{% endfor %}</p>
   {% endif %}
 </section>
+</div>
 
+<div>
 <section class="card">
   <h2>🥋 Registrar graduação</h2>
   <p class="sutil">A decisão é do professor. Registre aqui a nova faixa ou o novo grau.</p>
@@ -103,4 +109,6 @@
     {% endif %}
   </form>
 </section>
+</div>
+</div>
 {% endblock %}

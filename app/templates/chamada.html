@@ -2,69 +2,86 @@
 {% from "_macros.html" import faixa %}
 {% block titulo %}Chamada{% endblock %}
 {% block conteudo %}
-<section class="card">
-  <h1>Chamada</h1>
-  <form method="get" class="linha-data" aria-label="Escolher data da chamada">
-    <label for="data-escolha">Data</label>
-    <input type="date" id="data-escolha" name="data" value="{{ data.isoformat() }}" max="{{ hoje.isoformat() }}">
-    <button type="submit" class="btn">Abrir</button>
-  </form>
-  <p class="status-chamada">
-    {% if aula %}
-      ✔️ Chamada de {{ data|data_br }} já registrada. Você pode corrigir e salvar de novo.
-    {% else %}
-      📝 Chamada de {{ data|data_br }}{{ ' (hoje)' if data == hoje }} ainda não registrada.
+<div class="grade-lateral">
+  <div class="coluna-lateral grudar">
+    <section class="card">
+      <h1>Chamada</h1>
+      <form method="get" class="linha-data" aria-label="Escolher data da chamada">
+        <label for="data-escolha">Data</label>
+        <input type="date" id="data-escolha" name="data" value="{{ data.isoformat() }}" max="{{ hoje.isoformat() }}">
+        <button type="submit" class="btn">Abrir</button>
+      </form>
+      <p class="status-chamada">
+        {% if aula %}
+          ✔️ Chamada de {{ data|data_br }} já registrada. Você pode corrigir e salvar de novo.
+        {% else %}
+          📝 Chamada de {{ data|data_br }}{{ ' (hoje)' if data == hoje }} ainda não registrada.
+        {% endif %}
+      </p>
+    </section>
+
+    {% if ultimas %}
+    <section class="card so-computador-bloco">
+      <h2>Últimas chamadas</h2>
+      <ul class="lista-simples">
+        {% for d, total in ultimas %}
+        <li><a href="{{ url_for('chamada.chamada', data=d.isoformat()) }}">{{ d|data_br }}</a> — {{ total }} presente(s)</li>
+        {% endfor %}
+      </ul>
+    </section>
     {% endif %}
-  </p>
-</section>
-
-{% if not alunos %}
-<section class="card">
-  <p>Nenhum aluno ativo cadastrado. <a href="{{ url_for('alunos.lista') }}">Cadastre os alunos</a> para fazer a chamada.</p>
-</section>
-{% else %}
-<form method="post" id="form-chamada" class="card">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <input type="hidden" name="data" value="{{ data.isoformat() }}">
-
-  <div class="acoes-lista">
-    <button type="button" class="btn" data-marcar="todos">Marcar todos</button>
-    <button type="button" class="btn" data-marcar="nenhum">Desmarcar todos</button>
   </div>
 
-  <ul class="lista-chamada">
-    {% for aluno in alunos %}
-    <li>
-      <label class="item-chamada">
-        <input type="checkbox" name="presentes" value="{{ aluno.id }}" {{ 'checked' if aluno.id in presentes }}>
-        <span class="toggle" aria-hidden="true"></span>
-        <span class="item-info">
-          <strong>{{ aluno.nome }}</strong>
-          <span class="sutil">{{ aluno.idade }} anos · {{ faixa(aluno.faixa, aluno.graus) }}</span>
-          {% if aluno.observacao %}<span class="obs">⚠️ {{ aluno.observacao }}</span>{% endif %}
-          {% if not aluno.ativo %}<span class="sutil">(aluno inativo)</span>{% endif %}
-        </span>
-        <span class="estado" aria-hidden="true"></span>
-      </label>
-    </li>
-    {% endfor %}
-  </ul>
+  <div class="coluna-principal">
+    {% if not alunos %}
+    <section class="card">
+      <p>Nenhum aluno ativo cadastrado. <a href="{{ url_for('alunos.lista') }}">Cadastre os alunos</a> para fazer a chamada.</p>
+    </section>
+    {% else %}
+    <form method="post" id="form-chamada" class="card">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="data" value="{{ data.isoformat() }}">
 
-  <div class="barra-salvar">
-    <span id="contador" aria-live="polite">{{ presentes|length }} de {{ alunos|length }} presentes</span>
-    <button type="submit" class="btn btn-primario">Salvar chamada</button>
+      <div class="acoes-lista">
+        <button type="button" class="btn" data-marcar="todos">Marcar todos</button>
+        <button type="button" class="btn" data-marcar="nenhum">Desmarcar todos</button>
+      </div>
+
+      <ul class="lista-chamada">
+        {% for aluno in alunos %}
+        <li>
+          <label class="item-chamada">
+            <input type="checkbox" name="presentes" value="{{ aluno.id }}" {{ 'checked' if aluno.id in presentes }}>
+            <span class="toggle" aria-hidden="true"></span>
+            <span class="item-info">
+              <strong>{{ aluno.nome }}</strong>
+              <span class="sutil">{{ aluno.idade }} anos · {{ faixa(aluno.faixa, aluno.graus) }}</span>
+              {% if aluno.observacao %}<span class="obs">⚠️ {{ aluno.observacao }}</span>{% endif %}
+              {% if not aluno.ativo %}<span class="sutil">(aluno inativo)</span>{% endif %}
+            </span>
+            <span class="estado" aria-hidden="true"></span>
+          </label>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <div class="barra-salvar">
+        <span id="contador" aria-live="polite">{{ presentes|length }} de {{ alunos|length }} presentes</span>
+        <button type="submit" class="btn btn-primario">Salvar chamada</button>
+      </div>
+    </form>
+    {% endif %}
+
+    {% if ultimas %}
+    <section class="card so-celular">
+      <h2>Últimas chamadas</h2>
+      <ul class="lista-simples">
+        {% for d, total in ultimas %}
+        <li><a href="{{ url_for('chamada.chamada', data=d.isoformat()) }}">{{ d|data_br }}</a> — {{ total }} presente(s)</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
   </div>
-</form>
-{% endif %}
-
-{% if ultimas %}
-<section class="card">
-  <h2>Últimas chamadas</h2>
-  <ul class="lista-simples">
-    {% for d, total in ultimas %}
-    <li><a href="{{ url_for('chamada.chamada', data=d.isoformat()) }}">{{ d|data_br }}</a> — {{ total }} presente(s)</li>
-    {% endfor %}
-  </ul>
-</section>
-{% endif %}
+</div>
 {% endblock %}

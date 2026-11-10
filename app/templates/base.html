@@ -27,10 +27,21 @@
     </div>
     {% if g.usuario %}
     <nav class="menu" aria-label="Principal">
-      <a href="{{ url_for('chamada.chamada') }}" {% if request.blueprint == 'chamada' %}aria-current="page"{% endif %}>✅ Chamada</a>
-      <a href="{{ url_for('alunos.lista') }}" {% if request.blueprint == 'alunos' %}aria-current="page"{% endif %}>👥 Alunos</a>
-      <form method="post" action="{{ url_for('auth.logout') }}" class="sair">
+      {% set itens = [
+          ('chamada.chamada', '✅', 'Chamada'),
+          ('alunos.lista', '👥', 'Alunos'),
+          ('conta.professores', '🥋', 'Professores'),
+          ('conta.conta', '⚙️', 'Conta'),
+      ] %}
+      {% for endpoint, icone, rotulo in itens %}
+      {% set ativo = request.endpoint == endpoint or (endpoint == 'alunos.lista' and request.blueprint == 'alunos') %}
+      <a href="{{ url_for(endpoint) }}" {% if ativo %}aria-current="page"{% endif %}>
+        <span class="menu-icone" aria-hidden="true">{{ icone }}</span><span>{{ rotulo }}</span>
+      </a>
+      {% endfor %}
+      <form method="post" action="{{ url_for('auth.logout') }}" class="sair so-computador">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <span class="sutil-topo">{{ g.usuario.nome }}</span>
         <button type="submit">Sair</button>
       </form>
     </nav>

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "_macros.html" import erro, aria_erro %}
+{% block titulo %}Professores{% endblock %}
+{% block conteudo %}
+<h1>Professores</h1>
+<div class="grade-2">
+  <section class="card">
+    <h2>Quem tem acesso</h2>
+    <ul class="lista-professores">
+      {% for p in professores %}
+      <li>
+        <span class="item-info">
+          <strong>{{ p.nome }}{% if p.id == g.usuario.id %} <span class="etiqueta">Você</span>{% endif %}</strong>
+          <span class="sutil quebra">{{ p.email }}</span>
+        </span>
+        {% if p.id != g.usuario.id %}
+        <form method="post" action="{{ url_for('conta.remover_professor', usuario_id=p.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-perigo" data-confirmar="Remover o acesso de {{ p.nome }}?">Remover</button>
+        </form>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>➕ Adicionar professor</h2>
+    <p class="sutil">Crie o acesso e passe o e-mail e a senha para a pessoa. Ela pode trocar a senha depois em "Conta".</p>
+    <form method="post" class="formulario" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="prof-nome">Nome</label>
+      <input type="text" id="prof-nome" name="nome" required maxlength="120" autocomplete="off"
+             value="{{ form.get('nome', '') }}"{{ aria_erro(erros, 'nome') }}>
+      {{ erro(erros, 'nome') }}
+
+      <label for="prof-email">E-mail</label>
+      <input type="email" id="prof-email" name="email" required maxlength="254" autocomplete="off"
+             value="{{ form.get('email', '') }}"{{ aria_erro(erros, 'email') }}>
+      {{ erro(erros, 'email') }}
+
+      <label for="prof-senha">Senha inicial <span class="sutil">(mínimo {{ senha_min }} caracteres)</span></label>
+      <input type="password" id="prof-senha" name="senha_nova" required minlength="{{ senha_min }}" autocomplete="new-password"
+             {{ aria_erro(erros, 'senha_nova') }}>
+      {{ erro(erros, 'senha_nova') }}
+
+      <label for="prof-senha2">Repita a senha</label>
+      <input type="password" id="prof-senha2" name="senha_confirmacao" required autocomplete="new-password"
+             {{ aria_erro(erros, 'senha_confirmacao') }}>
+      {{ erro(erros, 'senha_confirmacao') }}
+
+      <label class="ver-senha"><input type="checkbox" data-ver-senha> Mostrar senhas</label>
+      <button type="submit" class="btn btn-primario">Adicionar professor</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

@@ -43,11 +43,12 @@ def create_app(config: dict | None = None) -> Flask:
     db.init_app(app)
     csrf.init_app(app)
 
-    from . import alunos, auth, chamada, cli
+    from . import alunos, auth, chamada, cli, conta
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(chamada.bp)
     app.register_blueprint(alunos.bp)
+    app.register_blueprint(conta.bp)
     cli.registrar(app)
 
     # Globais (e não context_processor) para ficarem visíveis também dentro das macros.

@@ -28,6 +28,20 @@
   document.getElementById('btn-fonte-mais').addEventListener('click', function () { mudarFonte(2); });
   document.getElementById('btn-fonte-menos').addEventListener('click', function () { mudarFonte(-2); });
 
+  // ---- No computador, formulários recolhíveis já começam abertos ----
+  if (window.matchMedia('(min-width: 960px)').matches) {
+    document.querySelectorAll('details[data-abrir-no-computador]').forEach(function (d) { d.open = true; });
+  }
+
+  // ---- Mostrar/ocultar senhas do formulário ----
+  document.querySelectorAll('[data-ver-senha]').forEach(function (caixa) {
+    caixa.addEventListener('change', function () {
+      caixa.form.querySelectorAll('input[name^="senha"]').forEach(function (campo) {
+        campo.type = caixa.checked ? 'text' : 'password';
+      });
+    });
+  });
+
   // ---- Confirmação em ações sensíveis ----
   document.querySelectorAll('[data-confirmar]').forEach(function (btn) {
     btn.addEventListener('click', function (e) {

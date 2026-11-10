@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% from "_macros.html" import erro, aria_erro %}
+{% block titulo %}Minha conta{% endblock %}
+{% block conteudo %}
+<h1>Minha conta</h1>
+<div class="grade-2">
+  <section class="card">
+    <h2>👤 Dados de acesso</h2>
+    <form method="post" action="{{ url_for('conta.salvar_dados') }}" class="formulario" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="conta-nome">Nome</label>
+      <input type="text" id="conta-nome" name="nome" required maxlength="120" autocomplete="name"
+             value="{{ dados.nome }}"{{ aria_erro(erros_dados, 'nome') }}>
+      {{ erro(erros_dados, 'nome') }}
+
+      <label for="conta-email">E-mail (usado para entrar)</label>
+      <input type="email" id="conta-email" name="email" required maxlength="254" autocomplete="email"
+             value="{{ dados.email }}"{{ aria_erro(erros_dados, 'email') }}>
+      {{ erro(erros_dados, 'email') }}
+
+      <label for="conta-senha-atual">Senha atual <span class="sutil">(só se for trocar o e-mail)</span></label>
+      <input type="password" id="conta-senha-atual" name="senha_atual" autocomplete="current-password"
+             {{ aria_erro(erros_dados, 'senha_atual') }}>
+      {{ erro(erros_dados, 'senha_atual') }}
+
+      <button type="submit" class="btn btn-primario">Salvar dados</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>🔒 Trocar senha</h2>
+    <form method="post" action="{{ url_for('conta.trocar_senha') }}" class="formulario" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="senha-atual">Senha atual</label>
+      <input type="password" id="senha-atual" name="senha_atual" required autocomplete="current-password"
+             {{ aria_erro(erros_senha, 'senha_atual') }}>
+      {{ erro(erros_senha, 'senha_atual') }}
+
+      <label for="senha-nova">Nova senha <span class="sutil">(mínimo {{ senha_min }} caracteres)</span></label>
+      <input type="password" id="senha-nova" name="senha_nova" required minlength="{{ senha_min }}" autocomplete="new-password"
+             {{ aria_erro(erros_senha, 'senha_nova') }}>
+      {{ erro(erros_senha, 'senha_nova') }}
+
+      <label for="senha-confirmacao">Repita a nova senha</label>
+      <input type="password" id="senha-confirmacao" name="senha_confirmacao" required autocomplete="new-password"
+             {{ aria_erro(erros_senha, 'senha_confirmacao') }}>
+      {{ erro(erros_senha, 'senha_confirmacao') }}
+
+      <label class="ver-senha"><input type="checkbox" data-ver-senha> Mostrar senhas</label>
+      <button type="submit" class="btn btn-primario">Trocar senha</button>
+    </form>
+  </section>
+</div>
+
+<section class="card so-celular">
+  <form method="post" action="{{ url_for('auth.logout') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" class="btn btn-largo">🚪 Sair do sistema</button>
+  </form>
+</section>
+{% endblock %}
