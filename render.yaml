@@ -5,6 +5,7 @@ services:
     runtime: python
     plan: free
     region: oregon  # mesma região do banco no Supabase (us-west-2), para respostas mais rápidas
+    autoDeployTrigger: checksPass  # só publica depois que os testes do GitHub Actions passarem
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn wsgi:app --workers 2 --bind 0.0.0.0:$PORT
     envVars:
