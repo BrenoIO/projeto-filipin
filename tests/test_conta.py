@@ -82,3 +82,25 @@ def test_remover_professor(logado):
 def test_nao_pode_remover_a_si_mesmo(logado):
     logado.post(f"/professores/{_eu().id}/remover")
     assert _eu() is not None
+
+
+def test_conta_protegida_nao_pode_ser_removida(logado):
+    db.session.add(Usuario(nome="Dono", email="dono@teste.com", senha_hash=generate_password_hash("x" * 8), protegido=True))
+    db.session.commit()
+    dono_id = db.session.scalar(select(Usuario.id).where(Usuario.email == "dono@teste.com"))
+
+    pagina = logado.get("/professores").get_data(as_text=True)
+    assert f"/professores/{dono_id}/remover" not in pagina
+    assert "Protegida" in pagina
+
+    resp = logado.post(f"/professores/{dono_id}/remover", follow_redirects=True)
+    assert "é protegida" in resp.get_data(as_text=True)
+    assert db.session.get(Usuario, dono_id) is not None
+
+
+def test_comando_proteger_professor(app):
+    runner = app.test_cli_runner()
+    assert "protegida" in runner.invoke(args=["proteger-professor", "Prof@Teste.com"]).output
+    assert _eu().protegido
+    runner.invoke(args=["proteger-professor", "prof@teste.com", "--desfazer"])
+    assert not _eu().protegido

@@ -10,10 +10,10 @@
       {% for p in professores %}
       <li>
         <span class="item-info">
-          <strong>{{ p.nome }}{% if p.id == g.usuario.id %} <span class="etiqueta">Você</span>{% endif %}</strong>
+          <strong>{{ p.nome }}{% if p.id == g.usuario.id %} <span class="etiqueta">Você</span>{% endif %}{% if p.protegido %} <span class="etiqueta" title="Esta conta não pode ser removida">🔒 Protegida</span>{% endif %}</strong>
           <span class="sutil quebra">{{ p.email }}</span>
         </span>
-        {% if p.id != g.usuario.id %}
+        {% if p.id != g.usuario.id and not p.protegido %}
         <form method="post" action="{{ url_for('conta.remover_professor', usuario_id=p.id) }}">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="btn btn-perigo" data-confirmar="Remover o acesso de {{ p.nome }}?">Remover</button>

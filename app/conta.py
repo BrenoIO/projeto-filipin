@@ -151,6 +151,9 @@ def remover_professor(usuario_id: int):
     if professor.id == g.usuario.id:
         flash("Você não pode remover a si mesmo(a).", "erro")
         return redirect(url_for("conta.professores"))
+    if professor.protegido:
+        flash(f"A conta de {professor.nome} é protegida e não pode ser removida.", "erro")
+        return redirect(url_for("conta.professores"))
 
     nome = professor.nome
     db.session.delete(professor)

@@ -40,3 +40,15 @@ def registrar(app: Flask) -> None:
             msg = f"Professor {email} criado."
         db.session.commit()
         click.echo(msg)
+
+    @app.cli.command("proteger-professor")
+    @click.argument("email")
+    @click.option("--desfazer", is_flag=True, help="Tira a proteção em vez de colocar.")
+    def proteger_professor(email: str, desfazer: bool):
+        """Impede (ou volta a permitir) que a conta seja removida pela tela de Professores."""
+        usuario = db.session.scalar(select(Usuario).where(Usuario.email == email.strip().lower()))
+        if usuario is None:
+            raise click.ClickException(f"Nenhum professor com o e-mail {email}.")
+        usuario.protegido = not desfazer
+        db.session.commit()
+        click.echo(f"Conta de {usuario.nome} {'desprotegida' if desfazer else 'protegida'}.")
